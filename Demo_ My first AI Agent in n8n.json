@@ -1,0 +1,156 @@
+{
+  "name": "Demo: My first AI Agent in n8n",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        0
+      ],
+      "id": "9f8ac185-ee72-426e-98f6-7d9a7c1224c9",
+      "name": "WhatsApp Trigger",
+      "webhookId": "9d3612fa-b071-4795-bce4-a62e71d5ee62",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "l0HNcI8jWV0Otgas",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=you are my assistant.reply concisely to this message from {{ $json.contacts[0].profile }}{{ $json.messages[0].text.body }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "e1f6cd26-d538-490e-86ef-bd9d02f30202",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        192
+      ],
+      "id": "99a4a497-54e0-4f37-94fd-9ebc9ffaa85a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "u3qRP5cZd9Bkwfh5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "686086531260562",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        288,
+        0
+      ],
+      "id": "08835779-3751-4bb9-8d7c-27e09a710a4d",
+      "name": "Send message",
+      "webhookId": "619a9734-22b3-4fa0-a2ff-b044045aa183",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "1VG33bu7m3rVPPod",
+          "name": "WhatsApp account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        192
+      ],
+      "id": "96637f5f-c0a3-49fd-a762-6cab5d011efa",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bebdcb32-63ae-4be3-a64a-b98de0013bcd",
+  "meta": {
+    "templateId": "self-building-ai-agent",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d750d059c0d8a7fac11e0d9d239e5480c89c08d4357e9c14b815b501a8a5c06a"
+  },
+  "id": "BXGB138BNp7g3Q2x",
+  "tags": []
+}
